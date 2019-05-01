@@ -1,6 +1,6 @@
 {
   "name": "subsink",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "description": "RxJS subscription sink for unsubscribing gracefully in a component",
   "license": "MIT",
