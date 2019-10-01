@@ -14,10 +14,13 @@ in your component library's `unmount`/`onDestroy` lifecycle event.
 
 ## Installation
 
-`npm install subsink --save`
+```bash
+npm install subsink --save
+```
 
 ## Angular example
-```
+
+```ts
 export class SomeComponent implements OnDestroy {
   private subs = new SubSink();
 
