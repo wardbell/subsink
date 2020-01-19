@@ -14,8 +14,9 @@ in your component library's `unmount`/`onDestroy` lifecycle event.
 
 ## Installation
 
-`npm install subsink`
-
+```bash
+npm install subsink --save
+```
 ## Angular examples
 
 There are 2 main ways to use the SubSink: the "easy" way and the "add/array" way.
@@ -26,7 +27,7 @@ There are 2 main ways to use the SubSink: the "easy" way and the "add/array" way
 
 Example using the `sink` property to collect the subscriptions using a setter.
 
-```
+```ts
 export class SomeComponent implements OnDestroy {
   private subs = new SubSink();
 
@@ -43,11 +44,11 @@ export class SomeComponent implements OnDestroy {
 }
 ```
 
-### The Array/Add Technqiue
+### The Array/Add Technique
 
 Example using the `.add` technique. This is similar to what RxJS supports out of the box.
 
-```
+```tsgst
 export class SomeComponent implements OnDestroy {
   private subs = new SubSink();
 
@@ -57,7 +58,8 @@ export class SomeComponent implements OnDestroy {
 
   this.subs.add(observable$.subscribe(...)); 
 
-  this.subs.add( // can add multiple subcriptions
+  // Add multiple subscriptions at the same time
+  this.subs.add( 
     observable$.subscribe(...),
     anotherObservable$.subscribe(...)
   ); 
