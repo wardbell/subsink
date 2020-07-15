@@ -18,6 +18,7 @@
     "exclude": [
         "node_modules",
         "lib",
-        "__tests__"
+        "__tests__",
+        "dist"
     ]
 }
