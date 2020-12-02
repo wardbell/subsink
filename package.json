@@ -1,13 +1,14 @@
 {
   "name": "subsink",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
+  "es2015": "dist/es2015/index.js",
   "description": "RxJS subscription sink for unsubscribing gracefully in a component",
   "license": "MIT",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "build": "rm -rf ./dist && tsc",
+    "build": "rm -rf ./dist && tsc && tsc -p tsconfig.es2015.json",
     "prepublish": "rm -rf ./dist && npm test && npm run build"
   },
   "jest": {
