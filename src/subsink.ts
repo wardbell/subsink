@@ -1,4 +1,5 @@
 const isFunction = (fn: any) => typeof fn === 'function';
+export type Nullable<T> = T | null | undefined;
 
 export interface SubscriptionLike {
   unsubscribe(): void;
@@ -10,7 +11,7 @@ export interface SubscriptionLike {
  */
 export class SubSink {
 
-  protected _subs: SubscriptionLike[] = [];
+  protected _subs: Nullable<SubscriptionLike>[] = [];
 
   /**
    * Subscription sink that holds Observable subscriptions
@@ -21,7 +22,7 @@ export class SubSink {
    * ```
    *   private subs = new SubSink();
    *   ...
-   *   this.subs.sink = observable$.subscribe(
+   *   this.subs.sink = observable$.subscribe(...)
    *   this.subs.add(observable$.subscribe(...));
    *   ...
    *   ngOnDestroy() {
@@ -36,7 +37,7 @@ export class SubSink {
    * @example
    *  this.subs.add(observable$.subscribe(...));
    */
-  add(...subscriptions: SubscriptionLike[]) {
+  add(...subscriptions: Nullable<SubscriptionLike>[]) {
     this._subs = this._subs.concat(subscriptions);
   }
 
@@ -45,7 +46,7 @@ export class SubSink {
    * @example
    *  this.subs.sink = observable$.subscribe(...);
    */
-  set sink(subscription: SubscriptionLike) {
+  set sink(subscription: Nullable<SubscriptionLike>) {
     this._subs.push(subscription);
   }
 
