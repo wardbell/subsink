@@ -2,6 +2,7 @@ const isFunction = (fn: any) => typeof fn === 'function';
 export type Nullable<T> = T | null | undefined;
 
 export interface SubscriptionLike {
+  sink?: SubscriptionLike;
   unsubscribe(): void;
 }
 
@@ -12,6 +13,7 @@ export interface SubscriptionLike {
 export class SubSink {
 
   protected _subs: Nullable<SubscriptionLike>[] = [];
+  protected _subx: { [subId: string]: Nullable<SubscriptionLike> } = {};
 
   /**
    * Subscription sink that holds Observable subscriptions
@@ -24,6 +26,9 @@ export class SubSink {
    *   ...
    *   this.subs.sink = observable$.subscribe(...)
    *   this.subs.add(observable$.subscribe(...));
+   *   ...
+   *   this.subs.id('my_sub').unsubscribe();
+   *   this.subs.id('my_sub').sink = observable$.subscribe(...);
    *   ...
    *   ngOnDestroy() {
    *     this.subs.unsubscribe();
@@ -51,6 +56,27 @@ export class SubSink {
   }
 
   /**
+   * Tracke subscriptions by subId
+   * @example
+   *  this.subs.id('my_sub').unsubscribe();
+   *  this.subs.id('my_sub').sink = observable$.subscribe(...);
+   */
+  id(subId: string) {
+    const subSink: SubscriptionLike = {
+      unsubscribe: () => this.unsub(subId),
+    };
+    Object.defineProperty(subSink, 'sink', {
+      set: (subscription: Nullable<SubscriptionLike>) => {
+        this.unsub(subId);
+        this._subx[subId] = subscription;
+      },
+      enumerable: true,
+      configurable: true,
+    });
+    return subSink;
+  }
+
+  /**
    * Unsubscribe to all subscriptions in ngOnDestroy()
    * @example
    *   ngOnDestroy() {
@@ -60,5 +86,17 @@ export class SubSink {
   unsubscribe() {
     this._subs.forEach(sub => sub && isFunction(sub.unsubscribe) && sub.unsubscribe());
     this._subs = [];
+    Object.keys(this._subx).forEach(subId => this.unsub(subId));
+    this._subx = {};
+  }
+
+  /**
+   * Unsubscribe subscription by SubId
+   * @param subId 
+   */
+  private unsub(subId: string) {
+    if (this._subx[subId] && isFunction(this._subx[subId].unsubscribe)) {
+      this._subx[subId].unsubscribe();
+    }
   }
 }

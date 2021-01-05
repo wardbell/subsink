@@ -15,15 +15,15 @@ in your component library's `unmount`/`onDestroy` lifecycle event.
 ## Installation
 
 ```bash
-npm install subsink --save
+npm install subsink2 --save
 ```
 ## Angular examples
 
-There are 2 main ways to use the SubSink: the "easy" way and the "add/array" way.
+There are 3 main ways to use the SubSink: the "easy" way, the "add/array" way and the "id" way.
 
 > RxJS supports adding subscriptions to an array of subscriptions. You can then unsubscribe directly from that array. If this appeals to you, then feel free to use it. If you prefer the technique with SubSink using the setter (aka easy) syntax below, then use that. Either way, no judgments are made. This is entirely up to you to decide.
 
-### Easy Syntax
+### 1. Easy Syntax
 
 Example using the `sink` property to collect the subscriptions using a setter.
 
@@ -44,18 +44,16 @@ export class SomeComponent implements OnDestroy {
 }
 ```
 
-### The Array/Add Technique
+### 2. The Array/Add Technique
 
 Example using the `.add` technique. This is similar to what RxJS supports out of the box.
 
-```tsgst
+```ts
 export class SomeComponent implements OnDestroy {
   private subs = new SubSink();
 
   ...
-
   this.subs.add(observable$.subscribe(...)); 
-
   this.subs.add(observable$.subscribe(...)); 
 
   // Add multiple subscriptions at the same time
@@ -63,7 +61,26 @@ export class SomeComponent implements OnDestroy {
     observable$.subscribe(...),
     anotherObservable$.subscribe(...)
   ); 
+  ...
 
+  // Unsubscribe when the component dies
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+}
+```
+
+### 3. The ID Method
+
+Example using the `id` method to collect the subscriptions.
+
+```ts
+export class SomeComponent implements OnDestroy {
+  private subs = new SubSink();
+
+  ...
+  this.subs.id('my_sub').unsubscribe();
+  this.subs.id('my_sub').sink = observable$.subscribe(...);
   ...
 
   // Unsubscribe when the component dies
