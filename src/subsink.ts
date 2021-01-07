@@ -13,8 +13,8 @@ export interface SubscriptionLike {
 export class SubSink {
 
   protected _subs: Nullable<SubscriptionLike>[] = [];
-  protected _subx: { [subId: string]: Nullable<SubscriptionLike> } = {};
-  protected _subz: { [subId: string]: Nullable<SubscriptionLike> } = {};
+  protected _subsPool: { [subId: string]: Nullable<SubscriptionLike> } = {};
+  protected _subsKeep: { [subId: string]: Nullable<SubscriptionLike> } = {};
 
   /**
    * Subscription sink that holds Observable subscriptions
@@ -64,14 +64,14 @@ export class SubSink {
    *  // Unsubscribe by subId
    *  this.subs.id('my_sub').unsubscribe();
    */
-  id(subId: string, isKeepPrev: boolean = false, isSubz: boolean = false) {
+  id(subId: string, isKeepPrev: boolean = false, isKeep: boolean = false) {
     const subscriptionLike: SubscriptionLike = {
-      unsubscribe: () => this.unsub(subId, isSubz),
+      unsubscribe: () => this.unsub(subId, isKeep),
     };
     Object.defineProperty(subscriptionLike, 'sink', {
       set: (subscription: Nullable<SubscriptionLike>) => {
-        if (!isKeepPrev) this.unsub(subId, isSubz);
-        (isSubz ? this._subz : this._subx)[subId] = subscription;
+        if (!isKeepPrev) this.unsub(subId, isKeep);
+        (isKeep ? this._subsKeep : this._subsPool)[subId] = subscription;
       },
       enumerable: true,
       configurable: true,
@@ -101,16 +101,16 @@ export class SubSink {
   unsubscribe() {
     this._subs.forEach(sub => sub && isFunction(sub.unsubscribe) && sub.unsubscribe());
     this._subs = [];
-    Object.keys(this._subx).forEach(subId => this.unsub(subId));
-    this._subx = {};
+    Object.keys(this._subsPool).forEach(subId => this.unsub(subId));
+    this._subsPool = {};
   }
 
   /**
    * Unsubscribe subscription by SubId
    * @param subId 
    */
-  private unsub(subId: string, isSubz: boolean = false) {
-    const subs = isSubz ? this._subz : this._subx;
+  private unsub(subId: string, isKeep: boolean = false) {
+    const subs = isKeep ? this._subsKeep : this._subsPool;
     if (subs[subId] && isFunction(subs[subId].unsubscribe)) {
       subs[subId].unsubscribe();
     }
