@@ -23,7 +23,34 @@ There are 3 main ways to use the SubSink: the "easy" way, the "add/array" way an
 
 > RxJS supports adding subscriptions to an array of subscriptions. You can then unsubscribe directly from that array. If this appeals to you, then feel free to use it. If you prefer the technique with SubSink using the setter (aka easy) syntax below, then use that. Either way, no judgments are made. This is entirely up to you to decide.
 
-### 1. Easy Syntax
+### 1. The ID Method
+
+Example using the `id` method to collect the subscriptions.
+
+```ts
+export class SomeComponent implements OnDestroy {
+  private subs = new SubSink();
+
+  ...
+  this.subs.id('my_sub').sink = observable$.subscribe(...);
+  // Unsubscribe by subId
+  this.subs.id('my_sub').unsubscribe();
+  ...
+  // This subscription will not be unsubscribed by "subs.unsubscribe" method.
+  // You should unsubscribe it manually.
+  this.subs.id_('my_sub2').sink = observable$.subscribe(...);
+  // Unsubscribe manually
+  this.subs.id_('my_sub2').unsubscribe();
+  ...
+
+  // Unsubscribe when the component dies
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
+}
+```
+
+### 2. Easy Syntax
 
 Example using the `sink` property to collect the subscriptions using a setter.
 
@@ -44,7 +71,7 @@ export class SomeComponent implements OnDestroy {
 }
 ```
 
-### 2. The Array/Add Technique
+### 3. The Array/Add Technique
 
 Example using the `.add` technique. This is similar to what RxJS supports out of the box.
 
@@ -61,27 +88,6 @@ export class SomeComponent implements OnDestroy {
     observable$.subscribe(...),
     anotherObservable$.subscribe(...)
   ); 
-  ...
-
-  // Unsubscribe when the component dies
-  ngOnDestroy() {
-    this.subs.unsubscribe();
-  }
-}
-```
-
-### 3. The ID Method
-
-Example using the `id` method to collect the subscriptions.
-
-```ts
-export class SomeComponent implements OnDestroy {
-  private subs = new SubSink();
-
-  ...
-  this.subs.id('my_sub').sink = observable$.subscribe(...);
-  // Unsubscribe by subId
-  this.subs.id('my_sub').unsubscribe();
   ...
 
   // Unsubscribe when the component dies

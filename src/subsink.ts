@@ -14,6 +14,7 @@ export class SubSink {
 
   protected _subs: Nullable<SubscriptionLike>[] = [];
   protected _subx: { [subId: string]: Nullable<SubscriptionLike> } = {};
+  protected _subz: { [subId: string]: Nullable<SubscriptionLike> } = {};
 
   /**
    * Subscription sink that holds Observable subscriptions
@@ -63,19 +64,31 @@ export class SubSink {
    *  // Unsubscribe by subId
    *  this.subs.id('my_sub').unsubscribe();
    */
-  id(subId: string, isKeepPrev: boolean = false) {
-    const subSink: SubscriptionLike = {
-      unsubscribe: () => this.unsub(subId),
+  id(subId: string, isKeepPrev: boolean = false, isSubz: boolean = false) {
+    const subscriptionLike: SubscriptionLike = {
+      unsubscribe: () => this.unsub(subId, isSubz),
     };
-    Object.defineProperty(subSink, 'sink', {
+    Object.defineProperty(subscriptionLike, 'sink', {
       set: (subscription: Nullable<SubscriptionLike>) => {
-        if (!isKeepPrev) this.unsub(subId);
-        this._subx[subId] = subscription;
+        if (!isKeepPrev) this.unsub(subId, isSubz);
+        (isSubz ? this._subz : this._subx)[subId] = subscription;
       },
       enumerable: true,
       configurable: true,
     });
-    return subSink;
+    return subscriptionLike;
+  }
+
+  /**
+   * Tracke subscriptions by subId, the subscription will not be unsubscribed by "subs.unsubscribe" method.
+   * You should unsubscribe it manually.
+   * @example
+   *  this.subs.id_('my_sub').sink = observable$.subscribe(...);
+   *  // Unsubscribe manually
+   *  this.subs.id_('my_sub').unsubscribe();
+   */
+  id_(subId: string, isKeepPrev: boolean = false) {
+    return this.id(subId, isKeepPrev, true);
   }
 
   /**
@@ -96,9 +109,10 @@ export class SubSink {
    * Unsubscribe subscription by SubId
    * @param subId 
    */
-  private unsub(subId: string) {
-    if (this._subx[subId] && isFunction(this._subx[subId].unsubscribe)) {
-      this._subx[subId].unsubscribe();
+  private unsub(subId: string, isSubz: boolean = false) {
+    const subs = isSubz ? this._subz : this._subx;
+    if (subs[subId] && isFunction(subs[subId].unsubscribe)) {
+      subs[subId].unsubscribe();
     }
   }
 }

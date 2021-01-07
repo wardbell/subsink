@@ -31,9 +31,25 @@ describe('SubSink', () => {
     expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
   });
 
-  test('unsubscribes to subscriptions added through ".id" method accessor', () => {
+  test('unsubscribes to subscriptions added through ".id" method accessor1', () => {
     subs.id('my_sub').sink = mockSubscription;
     subs.id('my_sub').unsubscribe();
+  
+    expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  test('unsubscribes to subscriptions added through ".id" method accessor2', () => {
+    subs.id('my_sub').sink = mockSubscription;
+    subs.id('my_sub').unsubscribe();
+    subs.unsubscribe();
+  
+    expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(2);
+  });
+  
+  test('unsubscribes to subscriptions added through ".id_" method accessor', () => {
+    subs.id_('my_sub').sink = mockSubscription;
+    subs.id_('my_sub').unsubscribe();
+    subs.unsubscribe();
   
     expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
   });
