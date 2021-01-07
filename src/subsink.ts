@@ -27,8 +27,9 @@ export class SubSink {
    *   this.subs.sink = observable$.subscribe(...)
    *   this.subs.add(observable$.subscribe(...));
    *   ...
-   *   this.subs.id('my_sub').unsubscribe();
    *   this.subs.id('my_sub').sink = observable$.subscribe(...);
+   *   // Unsubscribe by subId
+   *   this.subs.id('my_sub').unsubscribe();
    *   ...
    *   ngOnDestroy() {
    *     this.subs.unsubscribe();
@@ -58,16 +59,17 @@ export class SubSink {
   /**
    * Tracke subscriptions by subId
    * @example
-   *  this.subs.id('my_sub').unsubscribe();
    *  this.subs.id('my_sub').sink = observable$.subscribe(...);
+   *  // Unsubscribe by subId
+   *  this.subs.id('my_sub').unsubscribe();
    */
-  id(subId: string) {
+  id(subId: string, isKeepPrev: boolean = false) {
     const subSink: SubscriptionLike = {
       unsubscribe: () => this.unsub(subId),
     };
     Object.defineProperty(subSink, 'sink', {
       set: (subscription: Nullable<SubscriptionLike>) => {
-        this.unsub(subId);
+        if (!isKeepPrev) this.unsub(subId);
         this._subx[subId] = subscription;
       },
       enumerable: true,

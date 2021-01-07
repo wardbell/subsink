@@ -79,8 +79,9 @@ export class SomeComponent implements OnDestroy {
   private subs = new SubSink();
 
   ...
-  this.subs.id('my_sub').unsubscribe();
   this.subs.id('my_sub').sink = observable$.subscribe(...);
+  // Unsubscribe by subId
+  this.subs.id('my_sub').unsubscribe();
   ...
 
   // Unsubscribe when the component dies

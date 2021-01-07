@@ -32,7 +32,6 @@ describe('SubSink', () => {
   });
 
   test('unsubscribes to subscriptions added through ".id" method accessor', () => {
-    subs.id('my_sub').unsubscribe();
     subs.id('my_sub').sink = mockSubscription;
     subs.id('my_sub').unsubscribe();
   
