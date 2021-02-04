@@ -3,7 +3,7 @@ import { SubSink, SubscriptionLike } from '../src/subsink';
 describe('SubSink', () => {
   let mockSubscription: SubscriptionLike;
   let mockSubscription2: SubscriptionLike;
-  let sink: SubSink;
+  let subs: SubSink;
   
   beforeEach(() => {
     mockSubscription = {
@@ -13,38 +13,61 @@ describe('SubSink', () => {
       unsubscribe: jest.fn()
     };
   
-    sink = new SubSink();
+    subs = new SubSink();
   })
   
   
   test('unsubscribes to subscriptions added through method', () => {
-    sink.add(mockSubscription);
-    sink.unsubscribe();
+    subs.add(mockSubscription);
+    subs.unsubscribe();
   
     expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
   });
   
   test('unsubscribes to subscriptions added through property accessor', () => {
-    sink.sink = mockSubscription;
-    sink.unsubscribe();
+    subs.sink = mockSubscription;
+    subs.unsubscribe();
+  
+    expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  test('unsubscribes to subscriptions added through ".id" method accessor1', () => {
+    subs.id('my_sub').sink = mockSubscription;
+    subs.id('my_sub').unsubscribe();
+  
+    expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  test('unsubscribes to subscriptions added through ".id" method accessor2', () => {
+    subs.id('my_sub').sink = mockSubscription;
+    subs.id('my_sub').unsubscribe();
+    subs.unsubscribe();
+  
+    expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(2);
+  });
+  
+  test('unsubscribes to subscriptions added through ".id_" method accessor', () => {
+    subs.id_('my_sub').sink = mockSubscription;
+    subs.id_('my_sub').unsubscribe();
+    subs.unsubscribe();
   
     expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
   });
   
   test('unsubscribes from subscription only once', () => {
-    sink.sink = mockSubscription;
+    subs.sink = mockSubscription;
   
-    sink.unsubscribe();
-    sink.unsubscribe();
+    subs.unsubscribe();
+    subs.unsubscribe();
   
     expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
   });
   
   test('unsubscribes from subscription only once', () => {
-    sink.sink = mockSubscription;
-    sink.sink = mockSubscription2;
+    subs.sink = mockSubscription;
+    subs.sink = mockSubscription2;
   
-    sink.unsubscribe();
+    subs.unsubscribe();
   
     expect(mockSubscription.unsubscribe).toHaveBeenCalledTimes(1);
     expect(mockSubscription2.unsubscribe).toHaveBeenCalledTimes(1);
@@ -52,23 +75,23 @@ describe('SubSink', () => {
   
   describe('does throw exception given SubscriptionLike is', () => {
     test('undefined', () => {
-      sink.add(undefined);
-      expect(() => sink.unsubscribe()).not.toThrow();
+      subs.add(undefined);
+      expect(() => subs.unsubscribe()).not.toThrow();
     });
   
     test('null', () => {
-      sink.add(null);
-      expect(() => sink.unsubscribe()).not.toThrow();
+      subs.add(null);
+      expect(() => subs.unsubscribe()).not.toThrow();
     });
   
     test('not a SubscriptionLike', () => {
-      sink.add({} as any);
-      expect(() => sink.unsubscribe()).not.toThrow();
+      subs.add({} as any);
+      expect(() => subs.unsubscribe()).not.toThrow();
     });
   
     test('containing a non function member with name unsubscribe', () => {
-      sink.add({unsubscribe: '1'} as any);
-      expect(() => sink.unsubscribe()).not.toThrow();
+      subs.add({unsubscribe: '1'} as any);
+      expect(() => subs.unsubscribe()).not.toThrow();
     });
   })
 })

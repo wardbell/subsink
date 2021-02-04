@@ -1,6 +1,6 @@
 {
-  "name": "subsink",
-  "version": "1.0.2",
+  "name": "subsink2",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "es2015": "dist/es2015/index.js",
   "description": "RxJS subscription sink for unsubscribing gracefully in a component",
@@ -27,10 +27,11 @@
   ],
   "typings": "./dist/index.d.ts",
   "maintainers": [
-    "Ward Bell"
+    "Ward Bell",
+    "CN-Tower"
   ],
   "repository": {
-    "url": "https://github.com/wardbell/subsink"
+    "url": "https://github.com/CN-Tower/subsink2"
   },
   "devDependencies": {
     "@types/jest": "^21.1.4",
