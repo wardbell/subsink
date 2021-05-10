@@ -48,7 +48,7 @@ export class SomeComponent implements OnDestroy {
 
 Example using the `.add` technique. This is similar to what RxJS supports out of the box.
 
-```tsgst
+```ts
 export class SomeComponent implements OnDestroy {
   private subs = new SubSink();
 
